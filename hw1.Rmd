@@ -1,0 +1,342 @@
+---
+title: "stats100b_hw1"
+author: "Takao"
+date: "4/5/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.21.36 PM.png")
+```
+
+
+From what is given in the problem, we know that 
+
+$$X \sim N(\mu = 0, \sigma^2 = 4)$$
+Additionally, We want to find the mean and variance for Xbar, we will do so by,
+
+$$\bar{X} \sim N(\mu_{\bar{X}} = \mu, \sigma^2_{\bar{X}} = \frac{\sigma^2}{n}) = N(0,\frac{4}{16}) = N(0,\frac{1}{4})$$
+Moving on with the problem, we have
+
+$$P(|\bar{X}| \leq c) = 0.9 = P(-c \leq \bar{X} \leq c) = P(\frac{-c - \mu_{\bar{X}}}{\sigma_{\bar{X}}} \leq \frac{\bar{X} - \mu_{\bar{X}}}{\sigma_{\bar{X}}} \leq \frac{c - \mu_{\bar{X}}}{\sigma_{\bar{X}}})$$
+
+$$ P(-2c \leq Z \leq 2c) = \Phi(2c) - \Phi(-2c) - [1-\Phi(2c)] = 2\Phi(2c) - 1 = 0.9$$
+
+Thus, simplifying the equation, we have 
+$$ 2\Phi(2c) = 1.95 $$
+$$ \Phi(2c) = 0.95$$
+
+
+Solving for c, we have 
+```{r}
+cat("c = ", qnorm((0.95)) / 2)
+```
+
+
+## 2
+
+Start with what is given through the problem,
+$$ X \sim N(\mu = 0, \sigma^2 = 4)$$
+
+Next, we look at Xbar
+
+$$\bar{X} \sim N(\mu_{\bar{X}} = \mu, \sigma^2_{\bar{X}} = \frac{\sigma^2}{n}) = N(0,\frac{4}{n})$$
+Moving on to the problem, we have 
+
+$$P(|\bar{X}| \leq 0.1) = 0.9 = P(-0.1 \leq \bar{X} \leq 0.1) = P(\frac{-0.1 - \mu_{\bar{X}}}{\sigma_{\bar{X}}} \leq \frac{\bar{X} - \mu_{\bar{X}}}{\sigma_{\bar{X}}} \leq \frac{0.1 - \mu_{\bar{X}}}{\sigma_{\bar{X}}})$$
+Plugging in the known values, we have, 
+$$P(\frac{-0.1 - 0}{2 / \sqrt{n}} \leq Z \leq \frac{0.1 - 0}{2 / \sqrt{n}}) = P(-0.05\sqrt{n} \leq Z \leq 0.05 \sqrt{n}) = 2\Phi(0.05\sqrt{n}) - 1 = 0.9$$
+
+
+Simplifying this equation, we get, 
+$$2\Phi(0.05\sqrt{n}) = 1.95 $$
+$$\Phi(0.05\sqrt{n}) = 0.95$$
+
+Solving for n, we get
+
+```{r}
+(qnorm(0.95) / 0.05)^2 
+```
+However, since we want to find the smallest integer n such that th condition is met, we will get.
+
+```{r}
+cat("smallest integer = ", 1083)
+```
+
+
+## 3
+
+We will be working first with what is given in the problem
+$$\mu_X = 15, \sigma_X = 10$$
+
+Since we are concerned with the 100 packages, let
+
+$$S = X_1 + X_2 + \cdots + X_{100}$$
+
+We want to find the mean and variance of S, and thus we will say
+
+$$S \overset{approx}{\sim} N(\mu_S = n\mu_X, \sigma^2_S = n\sigma^2_X) = N(100*15, 100*10^2) = N(1500, 10000)$$
+We can directly utilize this information to find the z-score
+
+$$P(S \leq 1700) = P(Z \leq \frac{1700 - 1500}{100}) = P(Z \leq 2)$$
+
+Thus, we must simply solve for this probability
+
+```{r}
+cat("Probability = ", 1 - pnorm(2))
+```
+
+
+## 4
+
+Since this is a fair game, the probability of winning is 1/2 and the probability of losing is 1/2 as well. 
+
+Additionally, since this is a fair game, the expected value of X is 
+$$E(X) = 5 \times 0.5 + (-5) \times 0.5 = 0$$
+And since 
+$$E(X) = \mu_X = 0$$
+To find the variance, 
+$$\sigma^2_X = Var(X) = E(X^2) - E(X)^2 = 5^2 \times 0.5 + (-5)^2 \times 0.5 = 25$$
+
+Similar to the prior problem, we will now be looking at the 50 games S.
+
+$$S = X_1 + X_2 + \cdots + X_{50}$$
+To approximate the mean and variance of S, we have
+
+$$S \overset{approx}{\sim} N(\mu_S = n\mu_X, \sigma^2_S = n\sigma^2_X) = N(0*50, 25*50) = N(0, 1250)$$
+
+We attempt to find the probablity of S is less than or equal to -75 in terms of Z score
+
+$$P(S\leq -75) = P(Z \leq \frac{-75 - 0}{\sqrt{1250}})$$
+
+Now, we simply solve for the probability
+```{r}
+cat("Probability = ", pnorm(-75/sqrt(1250)))
+```
+
+
+## 5
+
+We are given through the problem that the distribution of the life time of the device follows an exponential distribution. 
+
+The new model is equipped with a total of three components
+
+Thus let, 
+$$S = X_1 + X_2 + X-3$$
+
+We intend to find the moment generating function for S utilizing
+
+$$M_S(t) = E(e^{tS}) \overset{ind}= E(e^{tX_1})E(e^{tX_2})E(e^{tX_3})$$
+
+Since we know that X is exponentially distributed, we input that for f(x) when creating the moment generating function.
+
+$$E(e^{tX}) = \int_0^{\infty}e^{tx} \lambda e^{-\lambda x} dx = \lambda \int_0^{\infty}e^{-(\lambda - t)x} dx$$
+
+Utilizing integration by parts and setting $$u = (\lambda - t)x$$ and thus $$dx = \frac{1}{\lambda - t}du$$
+
+Completing the substitution we will get of u for x (and also remembering to account for the limits as well).
+
+$$\int_{u=0}^{u=\infty}e^{-u}\frac{1}{\lambda - t}du = \frac{1}{\lambda - t} (0+1) = \frac{1}{\lambda -t}$$
+Going back to creating the moment generating function, we must multiply the lambda to the solved integral. Thus
+
+$$M_X(t) = \lambda \times \frac{1}{\lambda - t} = \frac{\lambda}{\lambda -t}$$
+
+Since it is given that the device typically lasts for 100 hours,
+$$E(X_1) = \frac{1}{\lambda} = 100$$
+
+Solving this equation, we get that lambda = 0.01 and since the conditions for the three components are the same. 
+
+Moving on to the moment generating function of x, we have
+
+$$M_S(t) = E(e^{tX_1})E(e^{tX-2})E(e^{tX_3}) = \frac{\lambda}{\lambda -t} \times\frac{\lambda}{\lambda -t} \times\frac{\lambda}{\lambda -t} = (\frac{\lambda}{\lambda -t})^3 $$
+When we look at this moment generating function, we can see that this is very similar to the gamma distribution.
+
+Thus, we can say that the distribution of the life time for the new model follows a gamma distribution with alpha = 3 and lambda = 0.01. The sum of independent random variables follow gamma distributions also follows a gamma distribution.
+
+$$S \sim Gamma(\alpha = 3, \lambda = 0.01)$$
+
+
+## 6
+
+Since the probability of drawing coin A is 0.5 and drawing coin B is 0.5 the probability of getting a head is 
+$$p = 0.5 \times p_1 + 0.5 \times p_2$$
+Now referring back to the problem, we have that X is the total number of heads obtained when repeated n times in total, thus X follows a Binomial distribution, since there are two possible outcomes, where
+
+$$P(X = x) = {n \choose x}p^x(1-p)^{n-x}$$
+
+Now that we found the distribution of X, we intend to find a good approximation of the distribution of X for a large value of n, thus when n approaches infinity we have
+
+$$X \sim N(np, np(1-p))$$
+Additionally we can make this a standard normal distribution through a litle manipulation of 
+
+$$\frac{X - np}{\sqrt{np(1-p)}}\sim N(0, 1)$$
+
+
+## 7
+
+Similar to the previous problem, we have that the probability of selecting coin A is 1/2 and the probability of selecting coin B is 1/2 as well. 
+
+First, we will look at the number of heads obtained in 2 tosses using coin A through $X_A$
+
+The probability of getting two heads is 
+$$P(X_A =2) = p_1^2$$
+Next, the probability of getting one head is 
+$$P(X_A = 1) = 2 \times p_1 \times (1 - p_1)$$
+Finally, the probability of getting no head is 
+$$P(X_A = 0) = (1 - p_1)^2$$
+
+This applies for coin B as well where p1 becomes p2.
+
+Next, we denote $X$ as the number of heads obtained through two tosses. This will come out to 
+
+$$E(X) = 0.5 \times [2\times p_1^2 + 1 \times 2p_1(1-p_1)+0 \times(1-p_1)^2] + 0.5 \times [2\times p_2^2 + 1\times 2p_2(1-p_2) + 0 \times(1- p_2)^2]$$
+
+Solving the equation, we get that the 
+$$E(X) = p_1 + p_2$$
+Next we aim to find the variance and to do so we must find the expected value of x squared
+
+$$E(X^2) = 0.5 \times [2^2\times p_1^2 + 1^2 \times 2p_1(1 - p_1)] + 0.5 \times [2^2 \times p_2^2 + 1^2 \times 2p_2(1-p_2)]$$
+
+Simplifying this equation gives 
+$$E(X^2) = p_1(1+p_1) + p_2(1 + p_2)$$
+Now that we got all the necessary information, we attempt to find the variance 
+
+$$Var(X) = E(X^2) - E(X)^2 = p_1(1+p_1) + p_2(1 + p_2) - (p_1 + p_2)^2 = p_1(1-p_2) + p_2(1-p_1)$$
+Now we consider Y which is the total number of heads obtained out of the n tosses, thus 
+
+$$E(Y) = \sum_{i = 1}^{n/2}E(X_i) = \frac{n}{2}(p_1 + p_2)$$
+and similarly the variance will be 
+
+$$Var(Y) = \sum_{i=1}^{n/2}Var(X_i) = \frac{n}{2}[p_1(1-p_2) + p_2(1-p_1)]$$
+
+Now, we see how the distribution of Y becomes as n approaches infinity which can be denoted as 
+
+$$Y \sim N(\frac{n}{2}(p_1 + p_2), \frac{n}{2}[p_1(1-p_2) + p_2(1-p_1)])$$
+
+And this can be written in standard normal form of
+
+$$\frac{Y-E(Y)}{\sqrt{Var(Y)}} \sim N(0,1)$$
+
+
+## 8
+
+TO find the moment generation function of the given condition, we must simply utilize property and equations.
+
+$$M(t) = \int_{-\infty}^{\infty} e^{tx} f(x) dx$$
+
+We input the given variables 
+$$M(t) = \frac {1}{2}\int_5^7 e^{tx} dx$$
+
+Solving this integral, we have 
+
+$$ M(t) = \frac{1}{2t}\times(e^{7t} - e^{5t})$$
+
+
+## 9 
+
+From the problem, we have that Z = 2X + 4Y, where X and Y are both Gamma variables
+
+To find the moment generation function for Z and to simplify we must use properties. 
+
+$$M_Z(t) = E(e^{tZ}) = E(e^{2tX}e^{4tY}) \overset{ind}= E(e^{2tX}) \times E(e^{4tY})$$
+
+We will initially try to solve the left hand side by
+
+$$E(e^{2tX}) = \int_0^{\infty} e^{2tx} \frac{\lambda^{\alpha}}{\Gamma(\alpha)}x^{\alpha -1}e^{-\lambda x} dx$$
+
+To solve this integral, we will move the constants outside the integral and use integration by parts.
+
+$$u = (\lambda - 2t)x, dx = \frac {1}{\lambda - 2t} du$$
+
+Doing the substitutions and also for the limits as well, we have 
+
+$$\int_{x = 0}^{x = \infty} x^{\alpha - 1}e^{-(\lambda -2t)x}dx = \int_{u=0}^{u=\infty}(\frac{1}{\lambda -2t}u)^{\alpha -1}e^{-u} \frac{1}{\lambda -2t} du = \int_{u =0}^{u=\infty}(\frac{1}{\lambda -2t})^{\alpha - 1} u^{\alpha -1}e^{-u}\frac{1}{\lambda - 2t} du$$
+Simplifying the integral, we have 
+
+$$E(e^{2tX}) = \frac{\lambda^{\alpha}}{\Gamma(\alpha)}(\frac{1}{\lambda - 2t})^\alpha\int_{u=0}^{\infty} u^{\alpha -1}e^{-u} du$$
+
+We notice that the inside the integral will be the gamma distribution of alpha. Thus, the integral simplifies to 
+
+$$E(e^{2tX}) = (\frac{\lambda}{\lambda -2t})^{\alpha}$$
+
+Inputting the given values from the problem, we have that
+
+$$E(e^{2tX}) = (\frac{1}{1 -t})^{2}$$
+
+Moving onto Y, we have
+
+$$E(e^{4tY}) = \int_0^{\infty} e^{4ty} \frac{\lambda^{\alpha}}{\Gamma(\alpha)}x^{\alpha -1}e^{-\lambda y} dy$$
+
+To solve this integral, we will move the constants outside the integral and use integration by parts.
+
+$$u = (\lambda - 4t)y, dy = \frac {1}{\lambda - 4t} du$$
+Doing the substitutions and also for the limits as well, we have 
+
+$$\int_{y = 0}^{y = \infty} x^{\alpha - 1}e^{-(\lambda -4t)y}dy = \int_{u=0}^{u=\infty}(\frac{1}{\lambda -4t}u)^{\alpha -1}e^{-u} \frac{1}{\lambda -4t} du = \int_{u =0}^{u=\infty}(\frac{1}{\lambda -4t})^{\alpha - 1} u^{\alpha -1}e^{-u}\frac{1}{\lambda - 4t} du$$
+
+Simplifying the integral, we have 
+
+$$E(e^{2tY}) = \frac{\lambda^{\alpha}}{\Gamma(\alpha)}(\frac{1}{\lambda - 4t})^\alpha\int_{u=0}^{\infty} u^{\alpha -1}e^{-u} du$$
+As before we notice that the inside of the integral is gamma variables, thus, this simplifies to 
+
+$$E(e^{4tY}) = (\frac{4}{4-4t})^{2} = (\frac{1}{1-t})^2$$
+
+Going back to the original moment generating function,
+
+$$M_Z(t) = E(e^{tZ}) = E(e^{2tX}) \times E(e^{4tY}) = (\frac{1}{1-t})^4$$
+Thus, we can conclude that Z follows a gamma distribution with alpha = 4 and lambda = 1 or 
+
+$$Z \sim Gamma(\alpha = 4, \lambda = 1)$$
+
+## 10
+
+### (a)
+
+$$ m(t) = 1 + 3t + 6t^2 + \cdots $$
+$$ m'(t) = 3 + 12t + \cdots $$
+$$ m''(t) = 12 + \cdots $$
+
+To find the mean, we have 
+
+$$ E(X) = m'(0) = 3$$
+
+Additionally the formula to find the variance will be 
+$$ Var(X) = E(X^2) - E(X)^2$$
+$$E(X^2) = m''(0) = 12$$
+Thus, the variance will be 
+$$ 12 - 3^2 = 3$$
+
+The mean is 3 and the variance is 12.
+
+
+### (b)
+
+The first equation cannot be a moment generating function. This is because 
+
+$$m_1(0) = 0.5 + 0 + \cdots = 0.5 \neq 1$$
+This breaks the conditions to be a moment generating function, thus this function is not a moment generating function.
+
+
+Next, the second equation cannot be a moment generating function.
+This is because when finding the variance of this function, we see that
+
+$$E(X) = 3, E(X^2) = 6$$
+And when utilizing the formula to find the variance, we see that
+
+$$Var(X) = E(X^2) - E(X)^2 = 6 - 3^2 = -3$$
+
+Variance cannot be negative, thus this cannot be a moment generating function.
+
+The third function can be a moment generating function.
+
+Thus, 1st and 2nd functions cannot be moment generating functions.
+

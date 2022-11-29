@@ -1,0 +1,279 @@
+---
+title: "stats100b_hw7"
+author: "Takao"
+date: "5/30/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1. Test of independence 
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.11 PM.png")
+```
+
+For i = 1, ... , 8 ethnic origin, and j = 1,2 response, 
+
+$$H_0: \pi_{ij} = \pi_{i.} \times \pi_{.j} \text{ (independence)}$$
+
+$$H_1: \pi_{ij} \neq \pi_{i.} \times \pi_{.j} \text{ for some i,j pair}$$
+
+Generating the function, we have that 
+
+```{r}
+Q1 <- function(data){
+  holder <- data;chi_stats <- 0
+  Tot <- sum(data);row_sum <- rowSums(data);col_sum <- colSums(data)
+  for(i in 1:dim(data)[1]){
+    for(j in 1:dim(data)[2]){
+      holder[i, j] <- row_sum[i]*col_sum[j]/Tot
+      chi_stats <- chi_stats + (data[i,j] - holder[i,j])^2/holder[i,j]
+    }
+  }
+  df <- (dim(data)[1] - 1)*(dim(data)[2] - 1)
+  cat("The test statistics = ", chi_stats, "\n")
+  cat("df = ", df, "\n")
+  cat("P-value = ", pchisq(chi_stats, df, lower.tail = FALSE))
+}
+
+```
+
+```{r}
+data <- matrix(c(78,56,43,53,43,36,42,29,47,29,29,32,30,22,23,7), ncol = 2, nrow = 8, byrow = FALSE)
+Q1(data)
+```
+
+Since the p-value is greater than 0.05, we fail to reject the null hypothesis
+
+## 2. Test of Independence
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.24 PM.png")
+```
+
+For i = 1,2,3,4 and j = 1,2,3
+
+$$H_0: \pi_{ij} = \pi_{i.} \times \pi_{.j} \text{ (independence)}$$
+
+$$H_1: \pi_{ij} \neq \pi_{i.} \times \pi_{.j} \text{ for some i,j pair}$$
+
+```{r}
+data <- matrix(c(8,15,13,14,19,15,15,4,7,3,1,4), ncol = 3, nrow = 4, byrow = TRUE)
+Q1(data)
+```
+
+Since the p-value is greater than 0.05, we fail to reject the null hypothesis
+
+## 3. Test of Homogeneity
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.29 PM.png")
+```
+
+For j = 1,2,3,4 groups (different drugs) and k = 1,2 categories (nausea, no nausea),
+
+$$H_0: \pi_{k1} = \pi_{k2} = \pi_{k3} = \pi_{k4}$$
+$$H_1: \pi_{kj} \neq \pi_{kj'} \text{ for some } j \neq j'$$
+
+All the samples are from the same categorical distribution
+
+```{r}
+data <- matrix(c(152-52, 52, 85 - 52, 52, 67 - 35, 35, 85 - 37, 37), nrow = 4, ncol = 2, byrow = TRUE)
+Q1(data)
+```
+
+Since the p-value is less than 0.05, we have significant evidence to reject the null hypothesis
+
+## 4. Test of homogeneity
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.33 PM.png")
+```
+
+For j = 1,2,3,4 groups (-2,-1, 1, 2 week) and k = 1,2 categories (Chinese, Jewish),
+
+$$H_0: \pi_{k1} = \pi_{k2} = \pi_{k3} = \pi_{k4}$$
+$$H_1: \pi_{kj} \neq \pi_{kj'} \text{ for some } j \neq j'$$
+
+```{r}
+data <- matrix(c(55,141,33,145,70,139,49,161), nrow = 4, ncol = 2, byrow = TRUE)
+Q1(data)
+```
+
+Since the p-value is less than 0.05, we have significant evidence to reject the null hypothesis.
+
+## 5
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.38 PM.png")
+```
+
+### a. Test of Independence 
+
+For i = 1,2,3 (3 flight duties) and j = 1,2 (female, male), 
+
+$$H_0: p_{ij} = p_{i.} \times p_{.j}$$
+
+$$H_1: p_{ij} \neq p_{i.} \times p_{.j} \text{ for some i,j pair}$$
+
+```{r}
+data <- matrix(c(51,38,14,16,38,46), nrow = 3, ncol = 2, byrow = TRUE)
+Q1(data)
+```
+
+Since the p-value is greater than 0.05, we fail to reject the null hypothesis
+
+### b. Simple Pearson's Chi-Square Test
+
+$$H_0: p_{female} = \frac{100}{100 + 105.73} \\ p_{male} = \frac{105.73}{100 + 105.73}$$
+
+$$H_1: p_{female} \neq \frac{100}{100 + 105.73} \\ p_{male} \neq \frac{105.73}{100 + 105.73}$$
+
+```{r}
+obs <- colSums(data);
+exp <- c(100/(100 + 105.37) * sum(data) , 105.37 / (100 + 105.37) * sum(data)) 
+chi_stats <- sum((obs - exp)^2 / exp)
+df <- 1
+cat("The test statistics = ", chi_stats, "\n")
+cat("df = ", df, "\n")
+cat("p-value = ", pchisq(chi_stats, df, lower.tail = FALSE))
+```
+
+Since the p-value is greater than 0.05, we fail to reject the null hypothesis
+
+## 6. Test of Homogeneity
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.56.41 PM.png")
+```
+
+For j = 1,2 groups (Sanditon I, Sandition II) and k = 1,2,3,4,5,6 categories (a, an, this, that, with, without), 
+
+$$H_0: \pi_{k1} = \pi_{k2}$$
+$$H_1: \pi_{kj} \neq \pi_{kj'} \text{ for some } j \neq j'$$
+
+```{r}
+data <- matrix(c(101, 83, 11, 29, 15, 15, 37, 22, 28, 43, 10, 4), nrow = 6, ncol = 2, byrow = TRUE)
+Q1(data)
+```
+
+Since the p-value is less than 0.05, we reject the null hypothesis
+
+
+## 7. McNemar Test
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.57.04 PM.png")
+```
+
+Let p1. be the probability of Heavy Exertion (previous day), and p.1 be the probability of Heavy Exertion (the day of myocardial infarction)
+
+$$H_0: p_{1.} = p_{.1}$$
+
+Defining the Q2 function, we have that 
+
+```{r}
+Q2 <- function(data){
+  chi_stats <- (data[1,2] - data[2,1])^2 / (data[1,2] + data[2,1])
+  df = 1
+  cat("test statistics = ", chi_stats, "\n")
+  cat("df = ", df, "\n")
+  cat("p-value = ", pchisq(chi_stats, df, lower.tail = FALSE))
+}
+```
+
+```{r}
+data <- matrix(c(4, 9, 50, 1165), nrow = 2, byrow = TRUE)
+Q2(data)
+```
+
+Since the p-value is less than 0.05, we have significant evidence to reject the null hypothesis
+
+## 8. McNemar Test
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.57.08 PM.png")
+```
+
+Let p1. be the probability of no DKA after therapy, and p.1 be the probability of no DKA before therapy.
+
+$$H_0: p_{1.} = p_{.1}$$
+
+```{r}
+data <- matrix(c(128, 7, 19, 7), nrow = 2, byrow = TRUE)
+Q2(data)
+```
+
+Since the p-value is less than 0.05, we have significant evidence to reject the null hypothesis
+
+## 9
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.57.13 PM.png")
+```
+
+### i 
+
+```{r}
+FM <- matrix(c(78, 94, 50, 89), nrow = 2, byrow = TRUE)
+SN <- matrix(c(13, 37, 115, 146), nrow = 2, byrow = TRUE)
+cat("proportion of male physician who advised patients to quit smoking = ", FM[1,1] / rowSums(FM)[1])
+cat("proportion of female physician who advised patients to quit smoking", FM[2,1]/rowSums(FM)[2])
+```
+
+### ii. Test of independence 
+
+For i = 1,2 (male, female) and j = 1,2 (advised, not advised), 
+
+$$H_0: p_{ij} = p_{i.} \times p_{.j}$$
+
+$$H_1: p_{ij} \neq p_{i.} \times p_{.j} \text{ for some i,j pair}$$
+
+```{r}
+Q1(FM)
+```
+Since the p-value is greater than 0.05, we fail to reject the null hypothesis
+
+### iii. Test of independence
+
+For i = 1,2 (smoker, non-smoker) and j = 1,2 (advised, not advised), 
+
+$$H_0: p_{ij} = p_{i.} \times p_{.j}$$
+
+$$H_1: p_{ij} \neq p_{i.} \times p_{.j} \text{ for some i,j pair}$$
+
+```{r}
+Q1(SN)
+```
+
+Since the p-value is less than 0.05, we have significant evidence to reject the null hypothesis
+
+## 10
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.57.18 PM.png")
+```
+
+### i
+
+$$\frac{odds(advised|male)}{odds(advised|female)} = \frac{P(advised|male)}{1-P(advised|male)} / \frac{P(advised|female)}{1-P(advised|female)}$$
+
+```{r}
+r <- ((FM[1,1] / rowSums(FM)[1]) / (1-FM[1,1] / rowSums(FM)[1])) / ((FM[2,1] / rowSums(FM)[2]) / (1-FM[2,1] / rowSums(FM)[2]))
+cat("odds ratio = ", r)
+```
+
+### ii
+
+$$\frac{odds(advised|smoker)}{odds(advised|nonsmoker)} = \frac{P(advised|smoker)}{1-P(advised|smoker)} / \frac{P(advised|nonsmoker)}{1-P(advised|nonsmoker)}$$
+
+```{r}
+r <- ((SN[1,1] / rowSums(SN)[1]) / (1-SN[1,1] / rowSums(SN)[1])) / ((SN[2,1] / rowSums(SN)[2]) / (1-SN[2,1] / rowSums(SN)[2]))
+cat("odds ratio = ", r)
+```

@@ -1,0 +1,503 @@
+---
+title: "stats100b_hw3"
+author: "Takao Oba"
+date: "4/25/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.11 PM.png")
+```
+
+### i
+
+The pdf of a geometric function is given as 
+$$L(p;x) = \prod_i p(1-p)^{x_i-1}$$
+
+We find the log joint likelihood
+
+$$l(p;x) = \log L(p;x) = \sum_i\log[p(1-p)^{x_i-1}] = \sum_i\log(p) + \sum_i (x_i-1)\log(1-p)$$
+Moving on, we can simplify to 
+
+$$=n\log(p) + \log(1-p)\sum_i (x_i-1)$$
+
+Taking the derivative with respect to the unknown parameter, we have 
+
+$$\frac{d}{dp}l(p;x) = \frac{n}{p} - \frac{1}{1-p} \sum_i (x_i-1) = 0$$
+
+$$\frac{1}{1-p} \sum_i(x_i - 1) = \frac{n}{p}$$
+
+$$p\sum_i (x_i - 1) = n - np$$
+
+$$p\sum_i (x_i - 1) + np = n$$
+
+Further simplifying, we have that
+
+$$p[\sum_i (x_i-1) + n] = n$$
+Estimation of p is given through
+
+$$\hat{p}_{MLE} = \frac{n}{\sum_i x_i}$$
+
+### ii
+
+We are given two data points so we plug them into the answer from the prior question.
+
+$$\hat{p}_{MLE} = \frac{2}{[(3-1) + (4-1)] + 2}$$
+
+Using r, we have 
+
+```{r}
+p <- seq(0, 1, 0.01)
+lx <- function(xi,p) log(p) + log(1-p)*(xi - 1)
+lxx <- function(x1, x2, p) 2*log(p) + log(1-p)*(x1-1+x2-1)
+
+plot(p, lx(3, p), type = "l", ylim = c(-8,1), col = "red", main = "Joint Likelihood Function")
+lines(p, lx(4,p),col = "blue")
+lines(p, lxx(3,4,p), col = "green")
+legend(legend = c("3", "4", "3 and 4"), col = c("red", "blue", "green"), "topright", lty = c(1,1,1))
+
+MLE <- 2/(2+3+2)
+abline(v = MLE, col = "green")
+```
+
+## 2
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.15 PM.png")
+```
+
+### i 
+
+By definition, we have that, 
+
+$$L(\theta; x_1, x_2, x_3) = \prod_{i=1}^3 (1 + \theta) x_i^{\theta} = (1+\theta)^3 x_1^{\theta}x_2^{\theta}x_3^{\theta}$$
+
+Taking the log
+
+$$l(\theta;x_1,x_2,x_3) = 3\log(1+\theta) + \sum_{i=1}^3 \log(x_i^{\theta}) = 3\log(1+\theta) + \theta \sum_{i = 1}^3 \log(x_i)$$
+
+The log joint likelihood is 
+$$3\log(1+\theta) + \theta [\log(x_1) + \log(x_2) + \log(x_3)]$$
+Transfer above equation to R language.
+
+```{r}
+theta <- seq(-1, 4, 0.01)
+l <- function(theta, x1, x2, x3) (1+theta)^3*x1^theta*x2^theta*x3^theta
+
+ll <- function(theta, x1, x2, x3) 3*log(1 + theta) + theta*(log(x1) + log(x2) + log(x3))
+
+par(mfrow = c(1,2))
+plot(theta, l(theta, 0.3, 0.5, 0.4), type = "l", col = "red", main = "Joint Likelihood Function")
+plot(theta, ll(theta, 0.3, 0.5, 0.4), type = "l", col = "blue", cmain = "joint Log Likelihood Function")
+
+```
+
+
+### ii
+
+Multiply for N copies of pdf
+
+$$L(\theta; x) = \prod_i (1+\theta) x_i^{\theta} = (1+\theta)^n \prod_i x_i^{\theta}$$
+
+Taking the log, we have,
+
+$$l(\theta;x) = n\log(1+\theta) + \sum_i \log(x_i^{\theta}) = n\log(1+\theta) + \theta \sum_i \log(x_i)$$
+
+Next, we take the derivative with respect to the unknown parameter,
+
+$$\frac{d}{d\theta}l(\theta;x) = \frac{n}{1+\theta} + \sum_i \log(x_i) = 0$$
+
+We aim to simplify by
+
+$$1 + \theta = -\frac{n}{\sum_i \log(x_i)}$$
+
+We can solve for MLE by
+
+$$\hat{\theta}_{MLE} = -\frac{n}{\sum_i \log(x_i)} - 1$$
+
+## 3
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.20 PM.png")
+```
+
+This is a PMF
+
+### i
+
+We are given through the problem the data points
+
+$$L(\theta;x) = \frac{1}{3}\theta \times \frac{2}{3} \theta \times \frac{2}{3}\theta \times \frac{2}{3}\theta \times (1-\theta) = \frac{8}{81}\theta^4(1-\theta)$$
+Plotting the joint likelihood function using R, we have that
+
+```{r}
+theta <- seq(0,1,0.01)
+l <- function(theta) 8/81*theta^4*(1-theta)
+plot(theta,l(theta), type = "l", main = "Joint Likelihood Function")
+
+```
+
+### ii
+We initially start with logging
+
+$$l(\theta;x) = \log(\frac{8}{81}) + 4\log(\theta) + \log(1-\theta)$$
+
+Taking the derivative, we have that
+
+$$\frac{d}{d\theta};(\theta;x) = \frac{4}{\theta} - \frac{1}{1-\theta} = 0$$
+
+Simplifying we have that
+
+$$\frac{4}{\theta} = \frac{1}{1-\theta}$$
+
+Further,
+
+$$4-4\theta = \theta$$
+
+Now, solving for MLE, we have 
+
+$$\hat{\theta}_{MLE} = \frac{4}{5}$$
+
+Since the numeric values are given, we can solve using R
+```{r}
+ll <- function(theta) 4*log(theta) + log(1-theta)
+plot(theta, ll(theta), type = "l", main = "Joint Log Likelihood Function")
+abline(v = 0.8, col = "red")
+```
+
+
+### iii
+Raise probablity to the power of their corresponding occurence
+$$L(\theta;x) = (\frac{2}{3}\theta)^{y_0} \times (\frac{1}{3}\theta)^{y_1} \times (1-\theta)^{y_2}$$
+
+Taking the log, we have that 
+
+$$l(\theta;x) = y_0\log(\frac{2}{3}) + y_1\log(\frac{1}{3}) + y_0\log(\theta) + y_1 \log(\theta) + y_2\log(1-\theta)$$
+
+Moving on, we will take the derivative, which will be 
+
+$$\frac{d}{d\theta}l(\theta;x) = \frac{y_0 + y_1}{\theta} - \frac{y_2}{1-\theta} = 0$$
+
+Solving, we have that 
+$$\frac{y_0 + y_1}{\theta} = \frac{y_2}{1-\theta}$$
+
+Through simplification, we have that 
+
+$$y_0 + y_1 = (y_0 + y_1 + y_2)\theta$$
+
+Additionally, we can solve MLE through,
+
+$$\hat{\theta}_{MLE} = \frac{y_0 + y_1}{y_0 + y_1 + y_2}$$
+
+## 4
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.27 PM.png")
+```
+
+There is condition for x
+
+### i
+
+Thus, the likelihood function is not continuous
+
+$$L(\theta;x_1) = I(x_1 \geq \theta) \times \exp (\theta - x_1)$$
+
+Using R, we can solve that, also the graph drops at theta - 1.5 to 0. 
+
+```{r}
+theta <- seq(-3, 3, 0.01)
+l <- function(theta, x1) (x1 >= theta)*exp(theta-x1)
+plot(theta, l(theta,1.5), type = "l", main = "Likelihood Function when xi = 1.5")
+```
+
+### ii
+
+We want to find the joint likelihood function and MLE
+
+```{r}
+l <- function(theta, x1) (x1 >= theta)*exp(theta - x1)
+ll <- function(theta, x1, x2) (x1 >= theta)*(x2 >= theta)*exp(theta - x1)*exp(theta - x2)
+lll <- function(theta, x1, x2, x3) {
+  (x1 >= theta)*(x2 >= theta)*(x3 >= theta)*exp(theta - x1)*exp(theta - x2)*exp(theta - x3)
+}
+
+plot(theta, l(theta, 0.5), type = "l", main = "Likelihood Functions", col = "red")
+lines(theta, ll(theta, 0.5, 1.5), col = "blue")
+lines(theta, lll(theta, 0.5, 1.5,0.1), col = "green")
+legend(legend = c("1 Data Point", "2 Data Points", "3 Data Points"), col = c("red", "blue", "green"), "topright", lty = c(1,1,1))
+```
+
+Judged from the graph above, 
+
+$$\hat{\theta}_{MLE} = min\{x_1, \cdots, x_n\}$$
+
+## 5
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.31 PM.png")
+```
+
+Since independent, we can take the product and will thus be
+
+$$L(\theta; x) = \prod_i \frac{x_i}{\theta^2} \exp (-\frac{x_i^2}{2\theta^2}$$
+
+Taking the log, we have,
+
+$$l(\theta;x) = \sum_i \log[\frac{x_i}{\theta^2} \exp(-\frac{x_i^2}{2\theta^2})] = \sum_i[\log\frac{x_i}{\theta^2} - \frac{x_i^2}{2\theta^2}] = \sum_i [\log x_i - \log \theta^2 - \frac{x_i^2}{2\theta^2}]$$
+
+Distributing the summation sign, we have that 
+
+$$l(\theta ; x) = \sum_i \log x_i - n\log \theta^2 - \frac{1}{2\theta^2}\sum_i x_i ^2$$
+
+Taking the derivative and setting it equal to 0, we have that
+
+$$\frac{d}{d\theta} l(\theta; x) = - n \frac{1}{\theta^2}2\theta - \frac{1}{2} ( - 2\theta^{-3}) \sum_i x_i^2 = -2n \frac{1}{\theta} + \theta ^ {-3} \sum_i x_i^2 = 0$$
+
+Through simplification, we have that 
+
+$$-2n\theta^2 + \sum_i x_i^2 = 0$$
+
+Further, 
+
+$$2n\theta^2 = \sum_i x_i^2$$
+
+And we can isolate the theta by
+
+$$\theta^2 = \frac{\sum_i + x_i^2}{2n}$$
+
+We can now find the MLE through
+
+$$\hat{\theta}_{MLE} = \sqrt{\frac{\sum_i x_i^2}{2n}}$$
+
+The theta will be positive values and the negative will be ignored.
+
+## 6
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.35 PM.png")
+```
+
+### i
+
+Density function is given through
+
+$$f(x; \theta) = (1 + \theta)x^{\theta}$$
+
+Further, taking the log, we have 
+
+$$l(\theta; x) = \log f(x;\theta) = \log(1 + \theta) + \theta\log(x)$$
+
+First order derivative is given through
+
+$$S(\theta) = \frac{d}{d\theta} l(\theta; x) = \frac{1}{1 + \theta} + \log(x)$$
+
+The second order derivative can be denoted as 
+
+$$H(\theta) = \frac{d}{d\theta}S(\theta) = -\frac{1}{(1+\theta)^2}$$
+
+Using the negative expectation, we can solve as 
+
+$$I(\theta) = -E[H(\theta)] = -E[-\frac{1}{(1 + \theta)^2}] = \frac{1}{(1+\theta)^2}$$
+
+### ii
+
+To calculate the confidence interval, we first recognize that when n becomes infinity, then we have normality
+This can be expressed through
+
+$$\hat{\theta}_{MLE} \sim N(\theta, \frac{1}{nI(\theta)})$$
+
+Further, the variance can be found through plugging in the given equation in part i
+
+$$Var(\hat{\theta}_{MLE}) = \frac{1}{nI(\theta)} = \frac{(1+\theta)^2}{n}$$
+
+
+We can now construct the 95% confidence interval through 
+
+$$[\hat{\theta}_{MLE} - Z_{0.975} \times \sqrt{\frac{(1 + \hat{\theta}_{MLE})^2}{n}},\hat{\theta}_{MLE} + Z_{0.975} \times \sqrt{\frac{(1 + \hat{\theta}_{MLE})^2}{n}} ]$$
+
+## 7
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.41 PM.png")
+```
+
+### i
+We intend to find the fisher information through
+
+$$f(x;p) = p(1-p)^{x-1}$$
+
+Taking the log, we have
+
+$$l(p;x) = \log f(x;p) = \log(p) + (x-1) \log(1-p)$$
+
+Further taking the derivative, we have that
+
+$$S(p) = \frac{d}{dp} l(p;x) = \frac{1}{p} + \frac{1-x}{1-p}$$
+
+Finding the second order derivative, we have that
+
+$$H(p) = \frac{d}{dp}S(p) = -\frac{1}{p^2} + \frac{1-x}{(1-p)^2}$$
+
+Taking the negative expected value, we have that 
+
+$$I(p) = -E[H(p)] = \frac{1}{p^2} - \frac{1-E(x)}{(1-p)^2} = \frac{1}{p^2} - \frac{\frac{p}{p} - \frac{1}{p}}{(1-p)^2} = \frac{1}{p^2} + \frac{\frac{1-p}{p}}{(1-p)^2} = \frac{1}{p^2} + \frac{1}{p(1-p)}$$
+
+### ii
+
+To find the confidence interval, again, we use the normality assumption as
+
+$$\hat{p}_{MLE} \sim N(P, \frac{1}{nI(p)})$$
+
+Plugging in the given information from the prior question, we have that 
+
+$$\hat{p}_{MLE} \sim N(p, \frac{1}{nI(p)})$$
+
+We can then find the variance of this through
+
+$$Var(\hat{p}_{MLE}) = \frac{1}{nI(\theta)} = [\frac{n}{p^2} + \frac{n}{p(1-p)}]^{-1}$$
+
+We can then find the confidence interval through plugging values in,
+
+$$[\hat{p}_{MLE} - Z_{0.975} \times \{\frac{n}{\hat{p}_{MLE}^2} + \frac{n}{\hat{p}_{MLE}(1-\hat{p}_{MLE})}\}^{-\frac{1}{2}}, \hat{p}_{MLE} + Z_{0.975} \times \{\frac{n}{\hat{p}_{MLE}^2} + \frac{n}{\hat{p}_{MLE}(1-\hat{p}_{MLE})}\}^{-\frac{1}{2}} $$
+
+## 8
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.45 PM.png")
+```
+
+### i 
+
+The distribution is given through
+
+$$f(x;\theta) = \frac{x}{\theta^2} \exp(-\frac{x^2}{2\theta^2})$$
+
+Additionally, taking the log, we have
+
+$$l(\theta;x) = \log f(x;\theta) = \log(x) - \log(\theta^2) - \frac{x^2}{2\theta^2}$$
+
+Taking the derivative, we have that 
+
+$$ S(\theta) = \frac{d}{d\theta} l(\theta;x) = - \frac{2\theta}{\theta^2} - \frac{1}{2} x^2 (-2\frac{1}{\theta^3}) = -\frac{2}{\theta} + \frac{x^2}{\theta^3} $$
+
+Taking the seonc derivative, we have 
+
+$$H(\theta) = \frac{d}{d\theta} S(\theta;x) = \frac{2}{\theta^2} - \frac{3}{\theta^4}x^2$$
+
+Taking the negative expectation, we have 
+
+$$I(\theta) = -E[H(\theta)] = -E(\frac{2}{\theta^2} - \frac{3x^2}{\theta^4}) = - \frac{2}{\theta^2} + \frac{3}{\theta^4}E(x^2) = - \frac{2}{\theta^2} + \frac{3}{\theta^4}[Var(x) + E(x)^2]$$
+
+Solving the equation,
+
+$$I(\theta) = - \frac{2}{\theta^2} + \frac{3}{\theta^4}[\frac{4-\pi}{2}\theta^2 + \frac{\pi}{2}\theta^2] = -\frac{2}{\theta^2} + \frac{3}{\theta^4}(2\theta^2) = \frac{4}{\theta^2}$$
+
+### ii 
+
+Using the normality assumption, we have that
+
+$$\hat {\theta}_{MLE} \sim N(\theta, \frac{1}{nI(\theta)})$$
+
+Additionally, the variance can be found by
+
+$$Var(\hat{\theta}_{MLE}) = \frac{1}{nI(\theta)} = \frac{\theta^2}{4n}$$
+
+The 95% confidence interval can be found through
+
+$$[\hat{\theta}_{MLE} - Z_{0.975} \times \sqrt {\frac{\hat{\theta}_{MLE}^2}{4n}} , \hat{\theta}_{MLE} + Z_{0.975} \times \sqrt {\frac{\hat{\theta}_{MLE}^2}{4n}}]$$
+
+## 9 
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.49 PM.png")
+```
+
+Given the double exponential distribution, 
+we start with the joint likelihood function
+
+$$L(\theta; x) = \prod_i \frac{1}{2} \exp(-|x_i - \theta|)$$
+
+Taking the log, we have
+
+$$l(\theta;x) = \sum_i [log(\frac{1}{2}) - |x_i - \theta|] = n\log(\frac{1}{2}) - \sum_{i:x_i \geq \theta} (x_i - \theta) - \sum_{i:x_i < \theta}(\theta - x_i)$$
+
+Taking the derivative, we have that 
+
+$$\frac{d}{d\theta}l(\theta;x) = \sum_{i:x_i \geq \theta} 1 + \sum_{i:x_i < \theta} - 1 = 0$$
+We must set this derivative to equal 0. We will thus have to have theta to be the median of n sample.
+
+## 10
+
+```{r}
+knitr::include_graphics("/Users/takaooba/Desktop/Screen Shot 2022-11-28 at 4.37.53 PM.png")
+```
+
+We initially start again with
+
+$$L(\theta; x) = \prod_i \frac{1}{\sqrt{2\pi}} \times \frac{1}{\theta} \times \exp[-\frac{1}{2}(\frac{x_i - \theta}{\theta})^2]$$
+
+
+Taking the log, we have that 
+
+$$l(\theta;x) = \sum_i[\log(\frac{1}{\sqrt{2\pi}}) + \log(\frac{1}{\theta}) - \frac{1}{2}(\frac{x_i - \theta}{\theta})^2] = n\log(\frac{1}{\sqrt{2\pi}}) + n\log(\frac{1}{\theta}) - \frac{1}{2}\sum_i \frac{x_i^2 - 2\theta x_i + \theta^2}{\theta^2}$$
+
+Taking the derivative, we have that 
+
+$$\frac{d}{d\theta}l(\theta;x) = -\frac{n}{\theta} - \frac{1}{2} \sum_i \frac{(-2x_i + 2\theta)\theta^2 - (2\theta)(x_i^2 - 2\theta x_i + \theta^2)}{\theta^4} = -\frac{n}{\theta} - \frac{1}{2} \sum_i \frac{-2\theta^2 x_i + 2\theta^3 - 2\theta x_i^2 + 4\theta^2 x_i - 2\theta^3}{\theta^4}$$
+
+Solving and simplifying,
+
+$$-\frac{n}{\theta} - \frac{1}{2}\sum_i \frac{2\theta^2 x_i - 2\theta x_i^2}{\theta^4} = 0$$
+
+Further, we have that 
+
+$$-\frac{n}{\theta} - \sum_i \frac{\theta x_i - x_i^2}{\theta^3} = 0$$
+
+As we can distribute the summation, we have that 
+
+$$-n\theta^2 - \theta\sum_i x_i + \sum_i x_i^2 = 0b$$
+Dividing everything by -n and letting 
+
+$$m = \frac{1}{n}\sum_i x_i^2$$
+This results in 
+$$\theta^2 + \theta\bar{x} - m = 0$$
+We can now solve MLE through knowing what m is
+
+$$\hat{\theta}_{MLE} = \frac{-\bar{x} \pm \sqrt{\bar{x}^2 + 4m}}{2}$$
+
+As n approaches infinity, we have that his value approaches 
+
+$$\hat{\theta}_{MLE} \rightarrow \theta$$
+
+Additionally, 
+$$\bar{x} \rightarrow E(X) = \theta$$
+
+Moving on, we have that 
+
+$$m\rightarrow E(X^2) = Var(X) + E(X)^2 = \theta^2 + \theta^2 = 2\theta^2$$
+
+
+We can simplify through
+
+$$\theta = \frac{-\theta \pm \sqrt{\theta^2 + 4(2\theta^2)}}{2}$$
+
+$$\theta = \pm|\theta|$$
+
+This condition can happen in two ways:
+
+when x bar is greater than 0,
+$$\hat{\theta}_{MLE}= \frac{-\bar{x} + \sqrt{\bar{x}^2 + 4m}}{2}$$
+
+When x bar is less than 0, 
+
+$$\hat{\theta}_{MLE}= \frac{-\bar{x} - \sqrt{\bar{x}^2 + 4m}}{2}$$
