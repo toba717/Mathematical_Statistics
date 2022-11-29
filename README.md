@@ -21,7 +21,7 @@ and multi-parameter case.
 10. Data reduction: Sufficient statistics.
 11. Factorization theorem.
 12. Minimal sufficiency and MVUE.
-13. Lehmann and Scheff´e theorem.
+13. Lehmann and Scheffe theorem.
 14. Rao-Blackwell theorem, minimum variance unbiased estimators (MVUE).
 15. Confidence intervals.
 16. Hypothesis testing. Neyman-Pearson lemma, power functions and likelihood ratio tests
