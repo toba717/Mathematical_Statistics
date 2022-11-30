@@ -4,7 +4,6 @@ UCLA STATS100b Spring 2022 (Final Overall Course Grade: A)
 
 Course Title: Mathematical Statistics
 
-
 Topics:
 1. Exponential families.
 2. Moment generating functions of random variable. Distribution of a function of a random variable. Joint
